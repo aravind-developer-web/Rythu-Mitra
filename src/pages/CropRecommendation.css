@@ -1,0 +1,117 @@
+.rm-crop {
+  background: linear-gradient(180deg, #f8faf9, #eef2f1);
+  min-height: 100vh;
+  font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+/* HERO */
+.rm-crop-hero {
+  height: 45vh;
+  background:
+    linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.7)),
+    url("https://images.unsplash.com/photo-1501004318641-b39e6451bec6");
+  background-size: cover;
+  background-position: center;
+  color: white;
+  padding: 80px;
+  display: flex;
+  align-items: center;
+}
+
+.rm-crop-hero h1 {
+  font-size: 48px;
+  font-weight: 800;
+}
+
+.rm-crop-hero p {
+  margin-top: 14px;
+  font-size: 18px;
+  max-width: 600px;
+}
+
+/* FORM */
+.rm-crop-form {
+  background: white;
+  margin: -80px auto 60px;
+  max-width: 900px;
+  padding: 50px;
+  border-radius: 30px;
+  box-shadow: 0 40px 80px rgba(0,0,0,0.12);
+}
+
+.rm-crop-form h2 {
+  margin-bottom: 30px;
+}
+
+.rm-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.rm-form-grid input,
+.rm-form-grid select {
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  font-size: 14px;
+}
+
+.rm-crop-form button {
+  margin-top: 30px;
+  padding: 14px 30px;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 14px 40px rgba(34,197,94,0.35);
+}
+
+/* AI RESULTS */
+.rm-ai-result {
+  padding: 80px;
+}
+
+.rm-result-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 30px;
+}
+
+.rm-crop-card {
+  height: 320px;
+  border-radius: 26px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  cursor: pointer;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.25);
+}
+
+.rm-crop-card .overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    rgba(0,0,0,0.25),
+    rgba(0,0,0,0.75)
+  );
+  color: white;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.rm-crop-card h3 {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.rm-crop-card span {
+  margin-top: 10px;
+  font-size: 13px;
+  opacity: 0.9;
+}
