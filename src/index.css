@@ -2,13 +2,80 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Minimal reset only */
-* {
+/* =====================================================
+   GLOBAL RESET — SAFE WITH TAILWIND
+===================================================== */
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+/* =====================================================
+   HTML + BODY — ENABLE GLOBAL SCROLLING
+===================================================== */
+html, body {
+  height: auto !important;
+  min-height: 100vh !important;
+  overflow-y: auto !important; /* ⭐ MAIN FIX */
+  overflow-x: hidden !important;
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: "Inter", system-ui, sans-serif;
+  background-color: #f9fafb; /* Tailwind gray-50 */
+  color: #0f172a;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* =====================================================
+   ROOT APP CONTAINER FIX
+===================================================== */
+#root {
+  min-height: 100vh !important;
+  height: auto !important;
+  display: flex;
+  flex-direction: column;
+}
+
+/* =====================================================
+   IMAGE SAFETY
+===================================================== */
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+
+/* =====================================================
+   FORM ELEMENTS
+===================================================== */
+input,
+textarea,
+select,
+button {
+  font-family: inherit;
+  outline: none;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3);
+  border-color: #10b981;
+}
+
+/* =====================================================
+   SCROLLBAR — SMOOTH MODERN STYLE
+===================================================== */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.25);
+  border-radius: 10px;
 }

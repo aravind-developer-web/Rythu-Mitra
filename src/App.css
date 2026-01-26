@@ -1,6 +1,8 @@
-/* =========================
-   GLOBAL RESET
-========================= */
+/* ======================================================
+   AGI UI — GLOBAL OPTIMIZED LAYOUT FIXED WITH SIDEBAR
+====================================================== */
+
+/* RESET */
 *,
 *::before,
 *::after {
@@ -9,172 +11,96 @@
   box-sizing: border-box;
 }
 
-/* =========================
-   ROOT VARIABLES
-========================= */
+html { scroll-behavior: smooth; height: 100%; }
+
+body {
+  font-family: "Inter", "Segoe UI", sans-serif;
+  background: var(--bg-main);
+  color: var(--text-main);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* TOKENS */
 :root {
   --sidebar-width: 260px;
-
   --bg-main: #f7faf9;
   --bg-soft: #eef2f1;
   --white: #ffffff;
 
   --text-main: #0f172a;
-  --text-muted: rgba(15, 23, 42, 0.7);
+  --text-muted: rgba(15, 23, 42, 0.65);
 
   --green: #16a34a;
   --green-light: #22c55e;
+
+  --radius: 14px;
+  --radius-lg: 22px;
+
+  --shadow-soft: 0 4px 22px rgba(0,0,0,0.04);
+  --shadow-mid: 0 8px 28px rgba(0,0,0,0.10);
 }
 
-/* =========================
-   BODY
-========================= */
-body {
-  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
-  background: var(--bg-main);
-  color: var(--text-main);
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-
-  overflow: hidden; /* ✅ only app-main scrolls */
-}
-
-/* =========================
-   APP LAYOUT
-========================= */
+/* APP LAYOUT */
 .app-layout {
-  width: 100%;
-  height: 100vh;
   display: flex;
+  min-height: 100vh;
 }
 
-/* =========================
-   MAIN CONTENT AREA
-========================= */
 .app-main {
   margin-left: var(--sidebar-width);
   width: calc(100% - var(--sidebar-width));
-  height: 100vh;
-
-  overflow-y: auto;
-  padding: 32px;
-
-  background: linear-gradient(
-    180deg,
-    var(--bg-main),
-    var(--bg-soft)
-  );
+  padding: 36px 40px;
+  background: linear-gradient(180deg, var(--bg-main), var(--bg-soft));
+  transition: margin-left 0.30s ease;
+  min-height: 100vh;
+  position: relative;
+  z-index: 5;
 }
 
-/* ❌ REMOVED:
-.app-main > * {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-*/
-
-/* =========================
-   HEADINGS
-========================= */
-h1 {
-  font-size: 40px;
-  font-weight: 900;
-  letter-spacing: -0.6px;
+/* PAGE WRAPPER */
+.page-wrapper {
+  margin-left: var(--sidebar-width);
+  width: calc(100% - var(--sidebar-width));
+  min-height: 100vh;
+  padding: 36px 40px;
+  position: relative;
+  transition: 0.3s ease;
 }
 
-h2 {
-  font-size: 28px;
-  font-weight: 800;
+/* ======================================================
+   FIX FOR ALL FEATURE PAGES (IMPORTANT)
+====================================================== */
+.rm-disease,
+.rm-crop,
+.rm-weather,
+.rm-market,
+.rm-workers,
+.rm-transport,
+.rm-profile {
+  margin-left: var(--sidebar-width) !important;
+  width: calc(100% - var(--sidebar-width)) !important;
+  padding: 36px 40px;
+  position: relative;
+  z-index: 10;
 }
 
-h3 {
-  font-size: 20px;
-  font-weight: 700;
-}
-
-/* =========================
-   TEXT
-========================= */
-p {
-  font-size: 15px;
-  color: var(--text-muted);
-}
-
-/* =========================
-   LINKS
-========================= */
-a {
-  text-decoration: none;
-  color: inherit;
-}
-
-/* =========================
-   BUTTONS
-========================= */
-button {
-  font-family: inherit;
-  border: none;
-  cursor: pointer;
-  transition: all 0.25s ease;
-}
-
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* =========================
-   INPUTS
-========================= */
-input,
-select,
-textarea {
-  font-family: inherit;
-  outline: none;
-}
-
-input:focus,
-select:focus,
-textarea:focus {
-  border-color: var(--green);
-  box-shadow: 0 0 0 3px rgba(34,197,94,0.25);
-}
-
-/* =========================
-   IMAGE SAFETY
-========================= */
-img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-}
-
-/* =========================
-   404 PAGE
-========================= */
-.not-found {
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-}
-
-/* =========================
-   RESPONSIVE (MOBILE)
-========================= */
+/* RESPONSIVE FIX */
 @media (max-width: 768px) {
-  :root {
-    --sidebar-width: 0px;
-  }
+  :root { --sidebar-width: 0px; }
 
-  .app-layout {
-    flex-direction: column;
-  }
-
-  .app-main {
-    margin-left: 0;
-    width: 100%;
-    padding: 16px;
+  .app-main,
+  .page-wrapper,
+  .rm-disease,
+  .rm-crop,
+  .rm-weather,
+  .rm-market,
+  .rm-workers,
+  .rm-transport,
+  .rm-profile {
+    margin-left: 0 !important;
+    width: 100% !important;
+    padding: 22px !important;
   }
 }

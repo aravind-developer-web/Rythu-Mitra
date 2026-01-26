@@ -1,235 +1,275 @@
+/* ============================================================
+   Rythu Mitra — FAANG Dashboard (Clean, Error-Free Version)
+============================================================ */
+
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { useEffect, useState, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import toast from "react-hot-toast";
+
+/* COMPONENTS */
+import AIAssistantWidget from "../components/AIAssistantWidget";
+import SearchModal from "../components/SearchModal";
 import ExplainableModal from "../components/ExplainableModal";
+
+/* CHARTS */
+import WeatherChart from "../components/charts/WeatherChart";
+import DiseaseRiskChart from "../components/charts/DiseaseRiskChart";
+import SoilMoistureChart from "../components/charts/SoilMoistureChart";
+import CropGrowthChart from "../components/charts/CropGrowthChart";
+
+/* STYLES */
 import "./Dashboard.css";
+
+/* ============================================================ */
 
 export default function Dashboard() {
   const navigate = useNavigate();
+
+  /* -------------------- THEME ENGINE -------------------- */
+  const [darkMode, setDarkMode] = useState(() => {
+    return localStorage.getItem("theme") === "dark";
+  });
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", darkMode);
+    localStorage.setItem("theme", darkMode ? "dark" : "light");
+  }, [darkMode]);
+
+  /* -------------------- SEARCH MODAL -------------------- */
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  const handleKeyPress = useCallback((e) => {
+    if (e.ctrlKey && e.key === "k") {
+      e.preventDefault();
+      setSearchOpen(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, [handleKeyPress]);
+
+  /* -------------------- TOAST ALERT -------------------- */
+  useEffect(() => {
+    setTimeout(() => {
+      toast("⚠️ Rain expected in next 12 hours — adjust irrigation.", {
+        icon: "🌧",
+      });
+    }, 1200);
+  }, []);
+
+  /* -------------------- INSIGHT CARDS -------------------- */
+  const insights = [
+    {
+      title: "Crop Health",
+      value: "92%",
+      img: "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=1600",
+      reason: "Healthy nutrient levels",
+    },
+    {
+      title: "Disease Risk",
+      value: "Low",
+      img: "https://images.unsplash.com/photo-1584449937076-2c272e60f7d1?w=1600",
+      reason: "No fungal signatures detected",
+    },
+    {
+      title: "Market Trend",
+      value: "Upward",
+      img: "https://images.unsplash.com/photo-1602526218251-f61ba0bbf203?w=1600",
+      reason: "High mandi demand",
+    },
+    {
+      title: "Weather Index",
+      value: "Stable",
+      img: "https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=1600",
+      reason: "Ideal climate",
+    },
+  ];
+
+  /* -------------------- FEATURES / MODULES -------------------- */
+  const modules = [
+    {
+      title: "AI Crop Recommendation",
+      desc: "Soil, season & climate based suggestions.",
+      img: "https://images.unsplash.com/photo-1602526218251-f61ba0bbf203?w=1600",
+      route: "/crop-recommendation",
+    },
+    {
+      title: "AI Disease Detection",
+      desc: "Scan leaf images using AI Vision.",
+      img: "https://images.unsplash.com/photo-1584449937076-2c272e60f7d1?w=1600",
+      route: "/disease-detection",
+    },
+    {
+      title: "Market Price Insights",
+      desc: "Analyze mandi price trends.",
+      img: "https://images.unsplash.com/photo-1598201385881-b940baf0b31b?w=1600",
+      route: "/market-prices",
+    },
+    {
+      title: "Weather Intelligence",
+      desc: "Track micro-climate in your farm.",
+      img: "https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=1600",
+      route: "/weather",
+    },
+  ];
+
+  /* -------------------- MODAL STATE -------------------- */
   const [modalData, setModalData] = useState(null);
 
+  /* ============================================================
+       MAIN JSX
+  ============================================================ */
+
   return (
-    <div className="rm-dashboard">
+    <>
+      {/* Floating AI Assistant */}
+      <AIAssistantWidget />
 
-      {/* ================= HERO ================= */}
-      <section className="rm-hero">
-        <div className="rm-hero-left">
-          <span className="rm-badge">🌾 Smart Agriculture AI</span>
+      {/* Search Modal */}
+      <AnimatePresence>
+        {searchOpen && (
+          <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
+        )}
+      </AnimatePresence>
 
-          <h1>Rythu Mitra</h1>
-          <p>
-            AI-powered agriculture intelligence platform helping farmers with
-            crop planning, disease detection, market insights, and operations.
-          </p>
-
-          <div className="rm-hero-actions">
-            <button onClick={() => navigate("/crop-recommendation")}>
-              🌱 Get AI Crop Advice
-            </button>
-            <button className="secondary" onClick={() => navigate("/disease-detection")}>
-              📸 Scan Crop Disease
-            </button>
-          </div>
-        </div>
-
-        <motion.div
-          className="rm-ai-brief"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+      {/* WRAPPER */}
+      <motion.div
+        className="rm-dashboard"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+      >
+        {/* THEME TOGGLE */}
+        <button
+          className="rm-dark-toggle"
+          onClick={() => setDarkMode(!darkMode)}
         >
-          <h3>Today’s AI Farm Brief</h3>
-          <ul>
-            <li>🌾 Recommended crop: <b>Maize</b></li>
-            <li>🦠 Disease risk: <b>Low (92%)</b></li>
-            <li>🌦️ Rain expected in <b>48 hours</b></li>
-            <li>💰 Market trend: <b>Favorable</b></li>
-          </ul>
-        </motion.div>
-      </section>
+          {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
+        </button>
 
-      {/* ================= ALERT ================= */}
-      <div className="rm-alert-strip">
-        ⚠️ Light rainfall expected in next 48 hours — plan irrigation accordingly
-      </div>
+        {/* HERO */}
+        <section className="rm-hero">
+          <div className="rm-hero-left">
+            <span className="rm-badge">🌾 Smart Agriculture AI</span>
 
-      {/* ================= INSIGHTS ================= */}
-      <section className="rm-insights">
-        <Insight
-          title="Crop Health"
-          value="92%"
-          img="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?q=80&w=1200"
-          reason="Healthy growth & nutrients"
-          onClick={() =>
-            setModalData({
-              title: "Crop Health",
-              value: "92%",
-              confidence: 94,
-              reasons: [
-                "Balanced NPK nutrients",
-                "Healthy chlorophyll levels",
-                "Optimized irrigation cycle",
-              ],
-            })
-          }
-        />
+            <h1 className="rm-title">
+              Rythu Mitra <br />
+              <span className="rm-title-gradient">
+                Next-Gen Farming Dashboard
+              </span>
+            </h1>
 
-        <Insight
-          title="Disease Risk"
-          value="Low"
-          img="https://images.unsplash.com/photo-1598514982845-ecb2d1dc2f86?q=80&w=1200"
-          reason="No leaf disease patterns"
-          onClick={() =>
-            setModalData({
-              title: "Disease Risk",
-              value: "Low",
-              confidence: 92,
-              reasons: [
-                "No fungal spots detected",
-                "Favorable humidity",
-                "Healthy leaf texture",
-              ],
-            })
-          }
-        />
+            <p className="rm-subtext">
+              AI crop insights, market predictions, weather intelligence,
+              and disease detection — built for modern Indian farmers.
+            </p>
 
-        <Insight
-          title="Market Trend"
-          value="Upward"
-          img="https://images.unsplash.com/photo-1607962837359-5e7e89f86776?q=80&w=1200"
-          reason="High mandi demand"
-          onClick={() =>
-            setModalData({
-              title: "Market Trend",
-              value: "Upward",
-              confidence: 88,
-              reasons: [
-                "Increased buyer demand",
-                "Lower current supply",
-                "Seasonal price growth",
-              ],
-            })
-          }
-        />
+            <div className="rm-hero-actions">
+              <button onClick={() => navigate("/crop-recommendation")}>
+                🌱 AI Crop Advisor
+              </button>
 
-        <Insight
-          title="Weather Alert"
-          value="Moderate"
-          img="https://images.unsplash.com/photo-1501630834273-4b5604d2ee31?q=80&w=1200"
-          reason="Light rainfall forecast"
-          onClick={() =>
-            setModalData({
-              title: "Weather Alert",
-              value: "Moderate",
-              confidence: 90,
-              reasons: [
-                "Rain expected in 48 hours",
-                "No storm risk",
-                "Good sowing conditions",
-              ],
-            })
-          }
-        />
-      </section>
+              <button
+                className="secondary"
+                onClick={() => navigate("/disease-detection")}
+              >
+                📸 Scan Disease
+              </button>
+            </div>
+          </div>
 
-      {/* ================= AI MODULES ================= */}
-      <section className="rm-modules">
-        <h2>AI Intelligence Modules</h2>
-
-        <div className="rm-module-grid">
-          <Module
-            title="AI Crop Recommendation"
-            desc="Soil, season & climate-based crop suggestions."
-            img="https://images.unsplash.com/photo-1501004318641-b39e6451bec6?q=80&w=1200"
-            onClick={() => navigate("/crop-recommendation")}
+          <img
+            src="https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=1600"
+            alt="Farm"
+            className="rm-hero-image"
           />
+        </section>
 
-          <Module
-            title="AI Disease Detection"
-            desc="Upload crop images to detect diseases & treatments."
-            img="https://images.unsplash.com/photo-1598514982845-ecb2d1dc2f86?q=80&w=1200"
-            onClick={() => navigate("/disease-detection")}
-          />
-
-          <Module
-            title="Market Price Intelligence"
-            desc="AI-powered mandi price forecasting."
-            img="https://images.unsplash.com/photo-1607962837359-5e7e89f86776?q=80&w=1200"
-            onClick={() => navigate("/market-prices")}
-          />
-
-          <Module
-            title="Weather Intelligence"
-            desc="Hyper-local weather alerts for farming."
-            img="https://images.unsplash.com/photo-1501630834273-4b5604d2ee31?q=80&w=1200"
-            onClick={() => navigate("/weather")}
-          />
+        {/* ALERT */}
+        <div className="rm-alert-strip">
+          ⚠️ Mild rainfall predicted — optimize irrigation for next 12 hours.
         </div>
-      </section>
 
-      {/* ================= OPERATIONS ================= */}
-      <section className="rm-operations">
-        <Op
-          title="Worker Booking"
-          img="https://images.unsplash.com/photo-1592982537447-6f2a6a7d1a4d?q=80&w=1200"
-          onClick={() => navigate("/workers")}
+        {/* CHARTS */}
+        <section className="rm-charts">
+          <WeatherChart />
+          <DiseaseRiskChart />
+          <SoilMoistureChart />
+          <CropGrowthChart />
+        </section>
+
+        {/* INSIGHTS */}
+        <section className="rm-insights">
+          {insights.map((item, idx) => (
+            <div
+              key={idx}
+              className="rm-insight"
+              style={{ backgroundImage: `url(${item.img})` }}
+              onClick={() => setModalData(item)}
+            >
+              <h4>{item.title}</h4>
+              <h2>{item.value}</h2>
+              <small>{item.reason}</small>
+            </div>
+          ))}
+        </section>
+
+        {/* MODULES */}
+        <section className="rm-modules">
+          <h2 className="rm-section-title">AI Intelligence Tools</h2>
+
+          <div className="rm-module-grid">
+            {modules.map((m, idx) => (
+              <div
+                key={idx}
+                className="rm-module"
+                onClick={() => navigate(m.route)}
+              >
+                <img src={m.img} alt={m.title} />
+                <div>
+                  <h3>{m.title}</h3>
+                  <p>{m.desc}</p>
+                  <span>Explore →</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* OPERATIONS */}
+        <section className="rm-operations">
+          <div
+            className="rm-op"
+            style={{
+              backgroundImage:
+                "url(https://images.unsplash.com/photo-1528685921573-a3f1e8c0f6c4?w=1600)",
+            }}
+            onClick={() => navigate("/workers")}
+          >
+            <h3>Worker Booking</h3>
+          </div>
+
+          <div
+            className="rm-op"
+            style={{
+              backgroundImage:
+                "url(https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=1600)",
+            }}
+            onClick={() => navigate("/transport")}
+          >
+            <h3>Transport Services</h3>
+          </div>
+        </section>
+
+        {/* MODAL */}
+        <ExplainableModal
+          open={Boolean(modalData)}
+          data={modalData}
+          onClose={() => setModalData(null)}
         />
-        <Op
-          title="Transport Booking"
-          img="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=1200"
-          onClick={() => navigate("/transport")}
-        />
-      </section>
-
-      {/* ================= MODAL ================= */}
-      <ExplainableModal
-        open={Boolean(modalData)}
-        data={modalData}
-        onClose={() => setModalData(null)}
-      />
-    </div>
-  );
-}
-
-/* ================= SUB COMPONENTS ================= */
-
-function Insight({ title, value, img, reason, onClick }) {
-  return (
-    <motion.div
-      whileHover={{ scale: 1.05 }}
-      className="rm-insight"
-      style={{ backgroundImage: `url(${img})` }}
-      onClick={onClick}
-    >
-      <h4>{title}</h4>
-      <h2>{value}</h2>
-      <small>{reason}</small>
-    </motion.div>
-  );
-}
-
-function Module({ title, desc, img, onClick }) {
-  return (
-    <motion.div whileHover={{ scale: 1.03 }} className="rm-module" onClick={onClick}>
-      <img src={img} alt={title} />
-      <div>
-        <h3>{title}</h3>
-        <p>{desc}</p>
-        <span>Explore →</span>
-      </div>
-    </motion.div>
-  );
-}
-
-function Op({ title, img, onClick }) {
-  return (
-    <motion.div
-      whileHover={{ scale: 1.05 }}
-      className="rm-op"
-      style={{ backgroundImage: `url(${img})` }}
-      onClick={onClick}
-    >
-      <h3>{title}</h3>
-    </motion.div>
+      </motion.div>
+    </>
   );
 }

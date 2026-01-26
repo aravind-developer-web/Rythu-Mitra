@@ -1,102 +1,150 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import API from "../api/api.js";
 import "./DiseaseDetection.css";
 
 export default function DiseaseDetection() {
   const [image, setImage] = useState(null);
+  const [file, setFile] = useState(null);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
+  /* ============================
+        HANDLE IMAGE UPLOAD
+  ============================= */
   const handleImage = (e) => {
-    setImage(URL.createObjectURL(e.target.files[0]));
+    const imgFile = e.target.files[0];
+    if (!imgFile) return;
+
+    setImage(URL.createObjectURL(imgFile));
+    setFile(imgFile);
     setResult(null);
+    setError("");
   };
 
-  const runDetection = () => {
-    setLoading(true);
+  /* ============================
+        RUN AI DETECTION
+  ============================= */
+  const runDetection = async () => {
+    if (!file) return;
 
-    // Simulated AI response (replace with backend later)
-    setTimeout(() => {
-      setResult({
-        disease: "Leaf Blight",
-        confidence: "91%",
-        severity: "Medium",
-        treatment: [
-          "Use Mancozeb fungicide",
-          "Avoid over-irrigation",
-          "Remove infected leaves"
-        ]
+    setLoading(true);
+    setError("");
+    setResult(null);
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      const response = await API.post("/ai/detect/", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
-      setLoading(false);
-    }, 2000);
+
+      setResult(response.data);
+    } catch (err) {
+      console.error(err);
+      setError("⚠️ Unable to analyze image. Please try again.");
+    }
+
+    setLoading(false);
   };
 
   return (
-    <div className="rm-disease">
+    <div className="rm-disease-page">
 
-      {/* HERO */}
-      <section className="rm-disease-hero">
-        <h1>AI Disease Detection</h1>
-        <p>
-          Upload crop images to detect diseases using deep learning & computer vision.
+      {/* ===================== HERO ===================== */}
+      <motion.section
+        className="rm-disease-hero"
+        initial={{ opacity: 0, y: -15 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <h1 className="rm-title">AI Leaf Disease Detection</h1>
+        <p className="rm-subtext">
+          Upload a crop leaf image — our AI model will predict the disease with high confidence.
         </p>
-      </section>
+      </motion.section>
 
-      {/* UPLOAD */}
-      <section className="rm-upload-card">
+      {/* ===================== UPLOAD CARD ===================== */}
+      <motion.section
+        className="rm-upload-card glass-box"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+      >
         <input type="file" accept="image/*" onChange={handleImage} />
 
         {image && (
           <motion.img
             src={image}
-            alt="Crop"
+            alt="Preview"
             className="preview"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
           />
         )}
 
-        <button onClick={runDetection} disabled={!image}>
-          🧠 Scan with AI
+        <button className="scan-btn ripple" onClick={runDetection} disabled={!file || loading}>
+          {loading ? "Analyzing..." : "🧠 Scan with AI"}
         </button>
-      </section>
 
-      {/* LOADING */}
+        {error && <p className="rm-error">{error}</p>}
+      </motion.section>
+
+      {/* ===================== LOADING SKELETON ===================== */}
       {loading && (
-        <div className="rm-loading">
-          🔍 AI analyzing crop image...
-        </div>
+        <motion.div
+          className="rm-loading-shimmer"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          <div className="shimmer-line"></div>
+          <div className="shimmer-line short"></div>
+          <p>AI is analyzing your image…</p>
+        </motion.div>
       )}
 
-      {/* RESULT */}
+      {/* ===================== RESULT ===================== */}
       {result && (
         <motion.section
-          className="rm-result-card"
-          initial={{ opacity: 0, y: 30 }}
+          className="rm-result-card glass-box"
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <h2>🦠 Disease Detected</h2>
+          <h2>🦠 Detection Result</h2>
 
           <div className="rm-result-grid">
             <ResultItem label="Disease" value={result.disease} />
-            <ResultItem label="Confidence" value={result.confidence} />
-            <ResultItem label="Severity" value={result.severity} />
+            <ResultItem
+              label="Confidence"
+              value={`${(result.confidence * 100).toFixed(1)}%`}
+            />
           </div>
 
-          <h3>Recommended Treatment</h3>
-          <ul>
-            {result.treatment.map((t, i) => (
-              <li key={i}>✔ {t}</li>
-            ))}
-          </ul>
+          {/* OPTIONAL: If backend sends severity */}
+          {result?.severity && (
+            <ResultItem label="Severity" value={result.severity} />
+          )}
+
+          {/* OPTIONAL: If backend sends recommendations */}
+          {result?.recommendation && (
+            <div className="rm-recommendation">
+              <h3>Recommended Treatment</h3>
+              <ul>
+                {result.recommendation.map((tip, i) => (
+                  <li key={i}>✔ {tip}</li>
+                ))}
+              </ul>
+            </div>
+          )}
         </motion.section>
       )}
-
     </div>
   );
 }
 
-/* COMPONENT */
+/* ============================
+      SMALL COMPONENT
+============================ */
 function ResultItem({ label, value }) {
   return (
     <div className="rm-result-item">
