@@ -11,7 +11,7 @@ services:
     runtime: python
     region: singapore # or frankfurt/oregon
     plan: free
-    buildCommand: "./build.sh"
+    buildCommand: "bash build.sh"
     startCommand: "gunicorn project.wsgi:application"
     envVars:
       - key: PYTHON_VERSION
